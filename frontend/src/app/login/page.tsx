@@ -1,102 +1,106 @@
-"use client";
-import axios from "axios";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import "react-toastify/dist/ReactToastify.css";
-import { appName, serverURL } from "@/utils/utils";
-import { ToastContainer, toast } from "react-toastify";
-import VerticalCarousel from "../signup/VerticalCarousel";
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { toast } from 'sonner'
+import { motion } from 'framer-motion'
+import { serverURL } from '../../utils/utils';
 
 export default function Home() {
-  const [theme, setTheme] = useState<null | any | string>("light");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setTheme(
-        localStorage.getItem("theme") ? localStorage.getItem("theme") : "light"
-      );
-      if (localStorage.getItem("token")) {
-        window.location.href = "/chat";
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("theme", theme);
-    const localTheme: string = localStorage.getItem("theme")!.toString();
-    document.querySelector("html")!.setAttribute("data-theme", localTheme);
-  }, [theme]);
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const login = async () => {
-    const config = {
-      method: "POST",
-      url: `${serverURL}/users/login`,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": `application/json`,
-      },
-      data: {
-        email: email,
-        password: password,
-      },
-    };
-
-    axios(config)
-      .then((response) => {
-        toast.success("Logged In!");
-        localStorage.setItem("token", response.data.token);
-        window.location.href =
-          response.data.user.type === "admin" ? "/admin" : "/";
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error("Email or Password is wrong");
+    try {
+      const response = await fetch(`${serverURL}/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data || 'Login failed');
+      }
+
+      localStorage.setItem('token', data.token);
+      toast.success('Logged In!');
+      // Redirect user after successful login (adjust as needed)
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('An unknown error occurred');
+      }
+    }
   };
 
   return (
-    <main className="w-screen h-screen bg-base-100 flex flex-col items-center justify-center p-2 overflow-hidden">
-      <div className="absolute top-0 left-0 p-4 mx-4 my-4">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">NoaiGPTχ</h1>
-        </div>
-      </div>
-      <VerticalCarousel />
-      <div className="animate-fade-in-bottom flex flex-col w-full max-w-md rounded-xl p-10 border border-gray-300">
-        <p className="font-bold text-xl mb-4">Enter your personal or work email</p>
-        <input
-          className="input input-bordered mb-4 w-full"
-          placeholder="Enter your email"
-          type="text"
-          onChange={(x) => setEmail(x.target.value)}
-          value={email}
-        />
-        <p className="text-sm mb-1">Password</p>
-        <input
-          className="input input-bordered mb-5 w-full"
-          placeholder="Password"
-          type="password"
-          onChange={(x) => setPassword(x.target.value)}
-          value={password}
-        />
-        <button className="btn btn-primary w-full mb-4" onClick={() => login()}>
-          Login
-        </button>
-        <div className="flex justify-between items-center">
-          <p className="text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href={"/signup"}>
-              <span className="link link-primary">Sign up</span>
+    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
+      >
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Welcome back</h2>
+            <form onSubmit={(e) => { e.preventDefault(); login(); }} className="space-y-6">
+              <div>
+                <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-2">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Sign in
+                </button>
+              </div>
+            </form>
+          </div>
+          <div className="px-8 py-6 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+            <span className="text-sm text-gray-600">
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Sign up
+              </Link>
+            </span>
+            <Link href="/forgotpassword" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+              Forgot password?
             </Link>
-          </p>
-          <Link href="/forgotpassword" className="text-primary font-medium">
-            Forgot Password?
-          </Link>
+          </div>
         </div>
-      </div>
-      <ToastContainer />
+      </motion.div>
     </main>
-  );
+  )
 }

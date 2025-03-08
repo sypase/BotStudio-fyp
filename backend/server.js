@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import test from "./routes/test.js"
+import users from "./routes/users.js"
 
 
 dotenv.config();
@@ -13,12 +14,14 @@ app.use(express.json());
 
 
 app.use("/test", test);
+app.use("/users", users);
+
 
 
 
 
 app.get("/", (req, res) => {
-  res.send("BotSTUDIO API");
+  res.send("BotSTUDIO API Is running");
 });
 
 async function connectDB() {

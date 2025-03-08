@@ -1,15 +1,10 @@
-"use client";
+'use client';
 
 import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
-import { motion } from 'framer-motion';
-
-// Define serverURL here or use an environment variable
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000/api';
+import { Toaster, toast } from 'sonner';
+import { serverURL } from '../../utils/utils';
 
 export default function Signup() {
   const [email, setEmail] = useState<string>("");
@@ -24,22 +19,6 @@ export default function Signup() {
       window.location.href = "/chat";
     }
   }, []);
-
-  const handleGoogleSuccess = async (response: CredentialResponse) => {
-    try {
-      const tokenId = response.credential;
-      const res = await axios.post(`${serverURL}/users/google-auth`, { tokenId });
-      if (res.status === 200) {
-        const { token, user } = res.data;
-        toast.success("Google Authentication Successful!");
-        localStorage.setItem("token", token);
-        window.location.href = user.type === "admin" ? "/admin" : "/";
-      }
-    } catch (error) {
-      console.error("Google authentication error:", error);
-      toast.error("Google authentication failed. Please try again.");
-    }
-  };
 
   const sendVerificationCode = async () => {
     setLoading(true);
@@ -89,125 +68,96 @@ export default function Signup() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200 flex flex-col items-center justify-center p-4">
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
-      >
+      <div className="mb-8 transition-all duration-500 ease-in-out transform hover:scale-105">
         <h1 className="text-4xl font-bold text-indigo-700">Botstudio</h1>
-      </motion.div>
+      </div>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md"
-      >
+      <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md transition-all duration-500 ease-in-out transform hover:shadow-3xl">
         {formStep === 1 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+          <div className="transition-opacity duration-300 ease-in-out">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Get Started</h2>
             <input
-              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out"
               placeholder="Enter your email"
               type="email"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
             />
             <button
-              className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-300 mb-4"
+              className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-all duration-300 ease-in-out mb-4"
               onClick={sendVerificationCode}
               disabled={loading}
             >
               {loading ? <span className="loading loading-spinner"></span> : "Continue with email"}
             </button>
-            
-            <div className="flex items-center justify-center my-4">
-              <div className="border-t border-gray-300 flex-grow mr-3"></div>
-              <span className="text-gray-500">or</span>
-              <div className="border-t border-gray-300 flex-grow ml-3"></div>
-            </div>
-
-            <div className="flex justify-center">
-              <GoogleOAuthProvider clientId="602949390183-3164gj6t7dk9nsir9baenhsbgldhondc.apps.googleusercontent.com">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => toast.error("Google Sign-In failed. Please try again.")}
-                  size='large'
-                  theme="filled_blue"
-                  shape='pill'
-                  text='continue_with'
-                />
-              </GoogleOAuthProvider>
-            </div>
-          </motion.div>
+          </div>
         )}
 
         {formStep === 2 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+          <div className="transition-opacity duration-300 ease-in-out">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Your Details</h2>
             <input
-              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out"
               placeholder="Full Name"
               type="text"
               onChange={(e) => setName(e.target.value)}
               value={name}
             />
             <button 
-              className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+              className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-all duration-300 ease-in-out"
               onClick={() => setFormStep(3)}
             >
               Next
             </button>
-          </motion.div>
+          </div>
         )}
 
         {formStep === 3 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+          <div className="transition-opacity duration-300 ease-in-out">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Set Password</h2>
             <input
-              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out"
               placeholder="Password"
               type="password"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
             />
             <button 
-              className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+              className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-all duration-300 ease-in-out"
               onClick={() => setFormStep(4)}
             >
               Next
             </button>
-          </motion.div>
+          </div>
         )}
 
         {formStep === 4 && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+          <div className="transition-opacity duration-300 ease-in-out">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">Verify Email</h2>
             <input
-              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 ease-in-out"
               placeholder="Verification Code"
               type="text"
               onChange={(e) => setVerificationCode(e.target.value)}
               value={verificationCode}
             />
             <button 
-              className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+              className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-all duration-300 ease-in-out"
               onClick={verifyEmail}
             >
               Create Account
             </button>
-          </motion.div>
+          </div>
         )}
 
         <p className="mt-6 text-center text-gray-600">
           Already have an account?{" "}
-          <Link href="/login" className="text-indigo-600 hover:underline">
+          <Link href="/login" className="text-indigo-600 hover:underline transition-colors duration-300 ease-in-out">
             Log in
           </Link>
         </p>
-      </motion.div>
-      <ToastContainer />
+      </div>
+      <Toaster />
     </main>
   );
 }

@@ -9,7 +9,7 @@ const golos = Golos_Text({
 
 export const metadata = { 
   title: appName,
-  description: 'Your AI Textewriter',
+  description: 'Bot Studio',
 }
 
 export default function RootLayout({
